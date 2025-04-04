@@ -2,10 +2,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+from sklearn.model_selection import train_test_split
+
 
 df = pd.read_csv("NY-House-Dataset.csv")
+#target column == PRICE
 df.info()
 df.head()
 df.columns
@@ -61,3 +64,20 @@ df['TYPE'].value_counts()
 new_df = pd.get_dummies(df, columns=['LOCALITY', 'STREET_NAME', 'Neighborhoods and Boroughs', 'TYPE'], dtype=int)
 len(new_df.columns)
 
+y = new_df['PRICE']
+X = new_df.drop('PRICE',axis=1)
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=.3)
+
+model = LinearRegression()
+
+model.fit(X_train, y_train)
+
+predict = model.predict(X_test)
+mae = metrics.mean_absolute_error(y_test, predict)
+mse = metrics.mean_squared_error(y_test, predict)
+rmse = np.sqrt(mse)
+
+# Print evaluation metrics
+print(f'Mean Absolute Error: {mae}')
+print(f'Mean Squared Error: {mse}')
+print(f'Root Mean Squared Error: {rmse}')
